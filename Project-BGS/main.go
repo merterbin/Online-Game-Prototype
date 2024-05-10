@@ -4,22 +4,46 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/websocket"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "BGS")
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 func main() {
-	port := 8080
-	log.Printf("Server started on: http://localhost:%d", port)
+	http.HandleFunc("/ws", wsHandler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
 
-	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: http.HandlerFunc(handler),
+func wsHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
 	}
+	fmt.Println("Client connected")
+	defer conn.Close()
 
-	server.ListenAndServe()
+	for {
+		messageType, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-	log.Println("Server stopped")
+		if messageType == websocket.BinaryMessage {
+			fmt.Println("Received binary message:", message)
+		} else if messageType == websocket.TextMessage {
+			fmt.Println("Received text message:", string(message))
+		}
+
+		err = conn.WriteMessage(messageType, message)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }
