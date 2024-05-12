@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	s "strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -40,10 +41,23 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Received text message:", string(message))
 		}
 
-		err = conn.WriteMessage(messageType, message)
-		if err != nil {
-			log.Println(err)
-			return
+		msg := string(message)
+
+		if s.ToLower(msg) == "ping" {
+			err = conn.WriteMessage(websocket.TextMessage, []byte("Pong"))
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		} else {
+			err = conn.WriteMessage(messageType, message)
+			if err != nil {
+				log.Println(err)
+				return
+			} else {
+				log.Println("Send")
+			}
 		}
+
 	}
 }

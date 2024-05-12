@@ -51,6 +51,11 @@ public class WS : MonoBehaviour
             Debug.Log("SEND");
             await websocket.Send(new byte[] { Convert.ToByte(transform.position.x), Convert.ToByte(transform.position.y)});
         }
+        if (Input.GetKeyDown(KeyCode.W) == true)
+        {
+            Debug.Log("SEND");
+            await websocket.SendText("Ping");
+        }
     }
 
     async void SendWebSocketMessage()
