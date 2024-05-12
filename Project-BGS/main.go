@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +15,10 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+var position = make(map[string]float64)
+
 func main() {
+
 	http.HandleFunc("/ws", wsHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -39,24 +43,40 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Received binary message:", message)
 		} else if messageType == websocket.TextMessage {
 			fmt.Println("Received text message:", string(message))
-		}
 
-		msg := string(message)
+			msg := string(message)
 
-		if s.ToLower(msg) == "ping" {
-			err = conn.WriteMessage(websocket.TextMessage, []byte("Pong"))
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		} else {
-			err = conn.WriteMessage(messageType, message)
-			if err != nil {
-				log.Println(err)
-				return
+			if s.ToLower(msg) == "ping" {
+				err = conn.WriteMessage(websocket.TextMessage, []byte("Pong"))
+				if err != nil {
+					log.Println(err)
+					return
+				}
 			} else {
-				log.Println("Send")
+				var dat map[string]interface{}
+				if err := json.Unmarshal(message, &dat); err != nil {
+					panic(err)
+				}
+
+				currentX, ok := position["x"]
+
+				if ok {
+					if currentX == dat["x"] {
+						fmt.Println("Sensin")
+					} else {
+						err = conn.WriteJSON(dat)
+						if err != nil {
+							log.Println(err)
+							return
+						}
+					}
+				} else {
+					fmt.Println("SA")
+					position["x"] = dat["x"].(float64)
+				}
+
 			}
+
 		}
 
 	}
