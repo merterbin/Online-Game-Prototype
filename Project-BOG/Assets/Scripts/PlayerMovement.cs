@@ -7,12 +7,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] KeyCode rightKey = KeyCode.D;
     [SerializeField] KeyCode lefttKey = KeyCode.A;
 
+    public float horizontal;
     public float speed = 5.0f;
     Rigidbody2D rb;
     public Vector2 boxSize;
     public float castDistance;
     public LayerMask groundLayer;
     public float jumpForce = 5.0f;
+    private bool isOwner = true;
+    private bool isFacingRight = true;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -20,9 +23,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        horizontal = Input.GetAxis("Horizontal");
+        Flip();
+
         Move();
 
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded())
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded())
         {
             Jump();
         }   
@@ -36,13 +42,25 @@ public class PlayerMovement : MonoBehaviour
         }
         else if(Input.GetKey(lefttKey))
         {
+            
             rb.velocity = new Vector2(-speed, rb.velocity.y);
+           
         }
         else
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
         }
 
+    }
+    void Flip()
+    {
+        if (!isOwner) return;
+        if (isFacingRight && horizontal < 0 || !isFacingRight && horizontal > 0)
+        {
+            isFacingRight = !isFacingRight;
+            transform.Rotate(0f, 180f, 0f);
+        }
+        
     }
     void Jump()
     {
