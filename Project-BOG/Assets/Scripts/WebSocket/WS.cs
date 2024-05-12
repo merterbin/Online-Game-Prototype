@@ -9,14 +9,22 @@ public class WS : MonoBehaviour
 {
     WebSocket websocket;
     public Transform transform;
+    public GameObject player;
+    public GameObject clone;
+
+    Rigidbody2D rb;
 
     async void Start()
     {
         websocket = new WebSocket("ws://localhost:8080/ws");
-
+        rb = clone.GetComponent<Rigidbody2D>();
         websocket.OnOpen += () =>
         {
             Debug.Log("Connection open!");
+            Vector2 position = player.transform.position;
+            string data = JsonUtility.ToJson(position);
+            Debug.Log(position);
+            websocket.SendText(data);
         };
 
 
@@ -28,10 +36,14 @@ public class WS : MonoBehaviour
         websocket.OnMessage += (bytes) =>
         {
             var message = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log("OnMessage! " + message);
+            Vector2 clonePosition = JsonUtility.FromJson<Vector2>(message);
+            clonePosition = new Vector2(clonePosition.x + 15f, clonePosition.y);
+            clone.transform.position = Vector2.MoveTowards(clone.transform.position, clonePosition, 5f);
+
+            //clone.transform.position = new Vector2(clonePosition.x + 15f, clone.transform.position.y);
         };
 
-        
+            
         await websocket.Connect();
     }
 
@@ -40,22 +52,17 @@ public class WS : MonoBehaviour
 #if !UNITY_WEBGL || UNITY_EDITOR
         websocket.DispatchMessageQueue();
 #endif
+        if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) ) {
 
-        if (Input.GetKeyDown(KeyCode.A) == true)
-        {
-            Debug.Log("SEND");
-            await websocket.SendText("SES deneme 1 2 deneme 1 2");
+           ;
+            Vector2 position = player.transform.position;
+            string data = JsonUtility.ToJson(position);
+            Debug.Log(position);
+            websocket.SendText(data);
+           
+            
         }
-        if (Input.GetKeyDown(KeyCode.B) == true)
-        {
-            Debug.Log("SEND");
-            await websocket.Send(new byte[] { Convert.ToByte(transform.position.x), Convert.ToByte(transform.position.y)});
-        }
-        if (Input.GetKeyDown(KeyCode.W) == true)
-        {
-            Debug.Log("SEND");
-            await websocket.SendText("Ping");
-        }
+        
     }
 
     async void SendWebSocketMessage()
