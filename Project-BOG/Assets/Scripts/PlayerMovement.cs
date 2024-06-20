@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public bool isMe = true;
+
     [SerializeField] KeyCode rightKey = KeyCode.D;
     [SerializeField] KeyCode lefttKey = KeyCode.A;
 
@@ -13,9 +15,14 @@ public class PlayerMovement : MonoBehaviour
     public float castDistance;
     public LayerMask groundLayer;
     public float jumpForce = 5.0f;
+
+   
+    private GameObject gameManagment;
+    private bool isStay = true;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        gameManagment = GameObject.FindGameObjectWithTag("GameController");
     }
 
     void Update()
@@ -30,20 +37,48 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        if(Input.GetKey(rightKey))
+        if (isMe)
+        {
+            if (Input.GetKey(rightKey))
+            {
+                gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "right");
+                //rb.velocity = new Vector2(speed, rb.velocity.y);
+            }
+            else if (Input.GetKey(lefttKey))
+            {
+                gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "left");
+                //rb.velocity = new Vector2(-speed, rb.velocity.y);
+            }
+            else
+            {
+                if (!isStay)
+                {
+                    gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "stay");
+                }   
+               //rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+        }
+    }
+   
+    public void Move(string input)
+    {
+        if (input.ToLower() == "right")
         {
             rb.velocity = new Vector2(speed, rb.velocity.y);
+            isStay = false;
         }
-        else if(Input.GetKey(lefttKey))
+        else if (input.ToLower() == "left")
         {
             rb.velocity = new Vector2(-speed, rb.velocity.y);
+            isStay = false;
         }
         else
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
+            isStay = true;
         }
-
     }
+
     void Jump()
     {
 

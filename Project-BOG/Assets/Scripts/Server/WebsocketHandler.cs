@@ -47,7 +47,7 @@ public class WebsocketHandler : MonoBehaviour
         websocket.OnMessage += (bytes) =>
         {
             var jsonString = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log("OnMessage! " + jsonString);
+            //Debug.Log("OnMessage! " + jsonString);
             
             WsResponse res = new WsResponse();
             JsonUtility.FromJsonOverwrite(jsonString, res);
@@ -62,12 +62,6 @@ public class WebsocketHandler : MonoBehaviour
 #if !UNITY_WEBGL || UNITY_EDITOR
         websocket.DispatchMessageQueue();
 #endif
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            Debug.Log("left");
-            await websocket.SendText("left");
-        }
 
     }
 
@@ -84,6 +78,21 @@ public class WebsocketHandler : MonoBehaviour
         WsData wsData = new WsData();
         wsData.Type = "exit";
         wsData.Data = value;
+        await websocket.SendText(JsonUtility.ToJson(wsData));
+    }
+
+    public async void playerMovement(string type, string direction)
+    {
+        WsMovement move = new WsMovement();
+        move.RoomID = rh.RoomID;
+        move.Player = gameManager.youAre;
+        move.Type = type;
+        move.Direction = direction;
+
+        WsData wsData = new WsData();
+        wsData.Type = "move";
+        wsData.Data = JsonUtility.ToJson(move).ToString();
+
         await websocket.SendText(JsonUtility.ToJson(wsData));
     }
 
