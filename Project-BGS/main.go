@@ -1,25 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
+	"online-game/bgs/controllers"
+
+	"github.com/gofiber/contrib/websocket"
+	"github.com/gofiber/fiber/v2"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "BGS")
-}
-
 func main() {
-	port := 8080
-	log.Printf("Server started on: http://localhost:%d", port)
+	port := ":8080"
+	app := fiber.New()
 
-	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: http.HandlerFunc(handler),
-	}
+	app.Post("/room", controllers.Room)
+	app.Post("/room/exit/:id", controllers.GetRoom)
+	app.Post("/room/find", controllers.FindRoom)
 
-	server.ListenAndServe()
+	app.Get("/ws", websocket.New(controllers.WebSocketHandler))
 
-	log.Println("Server stopped")
+	log.Fatal(app.Listen(port))
 }
