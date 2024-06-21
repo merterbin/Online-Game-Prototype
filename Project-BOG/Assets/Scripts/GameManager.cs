@@ -9,8 +9,7 @@ public class GameManager : MonoBehaviour
     public GameObject player1Position;
     public GameObject player2Position;
 
-    private GameObject player1;
-    private GameObject player2;
+    
     public string youAre;
 
     public bool player1Have;
@@ -53,18 +52,21 @@ public class GameManager : MonoBehaviour
     {
         if(move.Player == "player1")
         {
-            if(move.Type == "walk")
+            Debug.Log("Player 1 move");
+            if (move.Type == "walk")
             {
-                player1.GetComponent<PlayerMovement>().Move(move.Direction);
+                GameObject.FindGameObjectWithTag("Player1").GetComponent<PlayerMovement>().Move(move.Direction.ToString());
             }  
         }
         else
         {
+       
             if (move.Type == "walk")
             {
-                player2.GetComponent<PlayerMovement>().Move(move.Direction);
-            }
+                GameObject.FindGameObjectWithTag("Player2").GetComponent<PlayerMovement>().Move(move.Direction.ToString());
+                Debug.Log("Player 2 move");
 
+            }
         }
     }
 
@@ -73,25 +75,32 @@ public class GameManager : MonoBehaviour
      {
         if(value == "player1")
         {
-         player1 =  Instantiate(PlayerPrefab, player1Position.transform.position,Quaternion.identity);
+         GameObject player1 =  Instantiate(PlayerPrefab, player1Position.transform.position,Quaternion.identity);
             player1.GetComponent<PlayerMovement>().isMe = true;
+            player1.tag = "Player1";
             player1Have = true;
 
             youAre = "player1";
         }
         else
         {
-            player2 = Instantiate(PlayerPrefab, player2Position.transform.position, Quaternion.identity);
+            GameObject player2 = Instantiate(PlayerPrefab, player2Position.transform.position, Quaternion.identity);
+            player2.tag = "Player2";
             player2Have = true;
             if (player1Have != true)
             {
-                 player1 = Instantiate(PlayerPrefab, player1Position.transform.position, Quaternion.identity);
+                GameObject player1 = Instantiate(PlayerPrefab, player1Position.transform.position, Quaternion.identity);
                 player1.GetComponent<PlayerMovement>().isMe = false;
+                player1.tag = "Player1";
                 player2.GetComponent<PlayerMovement>().isMe = true;
                 player1Have = true;
 
                 youAre = "player2";
-            } 
+            }
+            else
+            {
+                player2.GetComponent<PlayerMovement>().isMe = false;
+            }
         }
     }
 

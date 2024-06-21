@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WsMovement : MonoBehaviour
+public class WsMovement
 {
     public int RoomID;
     public string Player;

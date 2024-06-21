@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WsResponse : MonoBehaviour
+public class WsResponse 
 {
     public string Type;
     public string Status;

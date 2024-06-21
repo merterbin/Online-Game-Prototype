@@ -11,7 +11,7 @@ public class WebsocketHandler : MonoBehaviour
     private RoomHandler rh;
     private GameManager gameManager;
 
-    [SerializeField] public string wsURL = "ws://localhost:8080/ws";
+    [SerializeField] public string wsURL;
     [SerializeField] public bool isConnection = false;
 
     // Start is called before the first frame update
@@ -48,7 +48,7 @@ public class WebsocketHandler : MonoBehaviour
         {
             var jsonString = System.Text.Encoding.UTF8.GetString(bytes);
             //Debug.Log("OnMessage! " + jsonString);
-            
+
             WsResponse res = new WsResponse();
             JsonUtility.FromJsonOverwrite(jsonString, res);
             gameManager.GameHandler(res);

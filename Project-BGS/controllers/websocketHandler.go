@@ -27,11 +27,11 @@ func WebSocketHandler(c *websocket.Conn) {
 		// log.Printf("type: %s, data: %s", dat["Type"], dat["Data"])
 
 		if dat["Type"] == "login" {
-			utils.WsLogin(c, mt, dat, Rooms)
+			utils.WsLogin(c, mt, dat, &Rooms)
 		} else if dat["Type"] == "exit" {
 			utils.WsExit(c, mt, dat, Rooms)
 		} else if dat["Type"] == "move" {
-			utils.MovePlayer(c, mt, dat, Rooms)
+			utils.MovePlayer(c, mt, dat, &Rooms)
 		}
 	}
 

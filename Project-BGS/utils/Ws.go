@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/contrib/websocket"
 )
 
-func WsLogin(c *websocket.Conn, mt int, dat map[string]string, Rooms map[int]*models.Room) {
+func WsLogin(c *websocket.Conn, mt int, dat map[string]string, Rooms *map[int]*models.Room) {
 	var room map[string]interface{}
 	if err := json.Unmarshal([]byte(dat["Data"]), &room); err != nil {
 		panic(err)
@@ -17,10 +17,10 @@ func WsLogin(c *websocket.Conn, mt int, dat map[string]string, Rooms map[int]*mo
 
 	log.Printf("room: %v", room)
 
-	if CheckRoom(int(room["ID"].(float64)), Rooms) {
+	if CheckRoom(int(room["ID"].(float64)), *Rooms) {
 		var isAdded = AddPlayer(int(room["ID"].(float64)), c, Rooms)
 		if isAdded != -1 {
-			log.Println("You have successfully joined the room")
+			log.Printf("player%d join %d room", isAdded+1, int(room["ID"].(float64)))
 			res := &models.Response{
 				Type:   "login",
 				Status: "success",

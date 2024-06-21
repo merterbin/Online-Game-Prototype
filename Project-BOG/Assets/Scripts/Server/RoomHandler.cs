@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 public class RoomHandler : MonoBehaviour
 {
     [SerializeField] public int RoomID;
+    [SerializeField] public string roomURL;
     private WebsocketHandler wsHandler;
 
     void Start()
@@ -31,7 +32,9 @@ public class RoomHandler : MonoBehaviour
         form.AddField("player1", "hellokity");
         form.AddField("player2", "batman");
 
-        UnityWebRequest www = UnityWebRequest.Post("http://localhost:8080/room/find", form);
+
+        string findUrl = roomURL + "room/find";
+        UnityWebRequest www = UnityWebRequest.Post(findUrl, form);
         yield return www.SendWebRequest();
 
         var data = www.downloadHandler.text;
@@ -52,10 +55,11 @@ public class RoomHandler : MonoBehaviour
     {
         WWWForm form = new WWWForm();
         form.AddField("id", 25);
-        form.AddField("player1", "hellokity");
+        form.AddField("player1", "hellokity");  
         form.AddField("player2", "batman");
 
-        UnityWebRequest www = UnityWebRequest.Post("http://localhost:8080/room/exit/"+RoomID, form);
+        string exitUrl = roomURL + "room/exit/" + RoomID;
+        UnityWebRequest www = UnityWebRequest.Post(exitUrl, form);
         yield return www.SendWebRequest();
 
         var data = www.downloadHandler.text;

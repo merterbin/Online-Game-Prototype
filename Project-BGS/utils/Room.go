@@ -16,8 +16,8 @@ func CheckRoom(id int, Rooms map[int]*models.Room) bool {
 	return false
 }
 
-func AddPlayer(id int, p *websocket.Conn, Rooms map[int]*models.Room) int {
-	for _, v := range Rooms {
+func AddPlayer(id int, p *websocket.Conn, Rooms *map[int]*models.Room) int {
+	for _, v := range *Rooms {
 		if v.ID == id {
 			if v.Player1.Conn == nil {
 				v.Player1.Conn = p.Conn

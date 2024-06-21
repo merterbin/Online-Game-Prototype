@@ -7,15 +7,15 @@ import (
 	"github.com/gofiber/contrib/websocket"
 )
 
-func MovePlayer(c *websocket.Conn, mt int, dat map[string]string, Rooms map[int]*models.Room) {
+func MovePlayer(c *websocket.Conn, mt int, dat map[string]string, Rooms *map[int]*models.Room) {
 	var room map[string]interface{}
 	if err := json.Unmarshal([]byte(dat["Data"]), &room); err != nil {
 		panic(err)
 	}
 
 	var roomID int = int(room["RoomID"].(float64))
-	if CheckRoom(roomID, Rooms) {
-		for _, v := range Rooms {
+	if CheckRoom(roomID, *Rooms) {
+		for _, v := range *Rooms {
 			if v.ID == roomID {
 				if v.Player1.Conn == c.Conn {
 					move := &models.Movement{
@@ -35,7 +35,7 @@ func MovePlayer(c *websocket.Conn, mt int, dat map[string]string, Rooms map[int]
 					v.Player1.Conn.WriteMessage(mt, resJson)
 
 					if v.Player2.Conn != nil {
-						v.Player2.Conn.WriteMessage(mt, moveJson)
+						v.Player2.Conn.WriteMessage(mt, resJson)
 					}
 
 				} else if v.Player2.Conn == c.Conn {
@@ -57,7 +57,7 @@ func MovePlayer(c *websocket.Conn, mt int, dat map[string]string, Rooms map[int]
 					v.Player2.Conn.WriteMessage(mt, resJson)
 
 					if v.Player1.Conn != nil {
-						v.Player1.Conn.WriteMessage(mt, moveJson)
+						v.Player1.Conn.WriteMessage(mt, resJson)
 					}
 				}
 			}
