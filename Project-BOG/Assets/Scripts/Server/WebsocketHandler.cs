@@ -81,16 +81,39 @@ public class WebsocketHandler : MonoBehaviour
         await websocket.SendText(JsonUtility.ToJson(wsData));
     }
 
-    public async void playerMovement(string type, string direction)
+    public async void playerMovement(string type, string direction, Vector3 position)
     {
         WsMovement move = new WsMovement();
         move.RoomID = rh.RoomID;
         move.Player = gameManager.youAre;
+
+        WsPlayer wsPlayer = new WsPlayer();
+        wsPlayer.setPosition(position);
+        move.PlayerData = JsonUtility.ToJson(wsPlayer).ToString();
         move.Type = type;
         move.Direction = direction;
 
         WsData wsData = new WsData();
         wsData.Type = "move";
+        wsData.Data = JsonUtility.ToJson(move).ToString();
+
+        await websocket.SendText(JsonUtility.ToJson(wsData));
+    }
+
+    public async void playerMoved(string type, string direction, Vector3 position)
+    {
+        WsMovement move = new WsMovement();
+        move.RoomID = rh.RoomID;
+        move.Player = gameManager.youAre;
+
+        WsPlayer wsPlayer = new WsPlayer();
+        wsPlayer.setPosition(position);
+        move.PlayerData = JsonUtility.ToJson(wsPlayer).ToString();
+        move.Type = type;
+        move.Direction = direction;
+
+        WsData wsData = new WsData();
+        wsData.Type = "moved";
         wsData.Data = JsonUtility.ToJson(move).ToString();
 
         await websocket.SendText(JsonUtility.ToJson(wsData));

@@ -5,7 +5,9 @@ import (
 )
 
 type Room struct {
-	ID      int
-	Player1 websocket.Conn
-	Player2 websocket.Conn
+	ID              int
+	Player1         websocket.Conn
+	Player1Position [3]float64
+	Player2         websocket.Conn
+	Player2Position [3]float64
 }

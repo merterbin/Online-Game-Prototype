@@ -28,10 +28,12 @@ func WebSocketHandler(c *websocket.Conn) {
 
 		if dat["Type"] == "login" {
 			utils.WsLogin(c, mt, dat, &Rooms)
-		} else if dat["Type"] == "exit" {
+		} else if dat["Type"] == "exit" { // deleted
 			utils.WsExit(c, mt, dat, Rooms)
 		} else if dat["Type"] == "move" {
 			utils.MovePlayer(c, mt, dat, &Rooms)
+		} else if dat["Type"] == "moved" {
+			utils.MovedPlayer(c, mt, dat, &Rooms)
 		}
 	}
 

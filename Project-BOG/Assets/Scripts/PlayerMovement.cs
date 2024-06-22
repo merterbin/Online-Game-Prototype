@@ -41,19 +41,19 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.GetKey(rightKey))
             {
-                gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "right");
+                gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "right", transform.position);
                 //rb.velocity = new Vector2(speed, rb.velocity.y);
             }
             else if (Input.GetKey(lefttKey))
             {
-                gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "left");
+                gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "left", transform.position);
                 //rb.velocity = new Vector2(-speed, rb.velocity.y);
             }
             else
             {
                 if (!isStay)
                 {
-                    gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "stay");
+                    gameManagment.GetComponent<WebsocketHandler>().playerMovement("walk", "stay", transform.position);
                 }   
                //rb.velocity = new Vector2(0, rb.velocity.y);
             }
@@ -66,16 +66,19 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = new Vector2(speed, rb.velocity.y);
             isStay = false;
+            gameManagment.GetComponent<WebsocketHandler>().playerMoved("walk", "right", transform.position);
         }
         else if (input.ToLower() == "left")
         {
             rb.velocity = new Vector2(-speed, rb.velocity.y);
             isStay = false;
+            gameManagment.GetComponent<WebsocketHandler>().playerMoved("walk", "left", transform.position);
         }
         else
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
             isStay = true;
+            gameManagment.GetComponent<WebsocketHandler>().playerMoved("walk", "stay", transform.position);
         }
     }
 

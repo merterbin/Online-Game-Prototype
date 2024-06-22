@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
                 addPlayer(res.Player);
             }
         }
-        if(res.Type == "move")
+        else if(res.Type == "move")
         {
             if (res.Status == "success")
             {
@@ -45,6 +45,45 @@ public class GameManager : MonoBehaviour
                 JsonUtility.FromJsonOverwrite(res.Data, move);
                 movePlayer(move);
             }            
+        }
+        else if(res.Type == "moved")
+        {
+            if (res.Status == "success")
+            {
+                WsMovement move = new WsMovement();
+                JsonUtility.FromJsonOverwrite(res.Data, move);
+                WsPlayer wsPlayer = new WsPlayer();
+                JsonUtility.FromJsonOverwrite(move.PlayerData, wsPlayer);
+                if(move.Player == "player1")
+                {
+                    if(
+                        GameObject.FindGameObjectWithTag("Player1").GetComponent<Transform>().position.x == wsPlayer.Position[0] &&
+                        GameObject.FindGameObjectWithTag("Player1").GetComponent<Transform>().position.y == wsPlayer.Position[1]
+                        )
+                    {
+                        Debug.Log("1 pos");
+                    }
+                    else
+                    {
+                        Debug.Log("1 sop");
+                    }
+                     
+                }
+                else
+                {
+                    if (
+                        GameObject.FindGameObjectWithTag("Player2").GetComponent<Transform>().position.x == wsPlayer.Position[0] &&
+                        GameObject.FindGameObjectWithTag("Player2").GetComponent<Transform>().position.y == wsPlayer.Position[1]
+                        )
+                    {
+                        Debug.Log("2 pos");
+                    }
+                    else
+                    {
+                        Debug.Log("2 sop");
+                    }
+                }
+            }
         }
     }
 
